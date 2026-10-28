@@ -2,9 +2,9 @@
 layout: runbook
 title: '#4471 · what the merged reports show'
 owner: support desk
-status: closed
+status: open
 reviewed: 2026-10-28
-signature: Marcin Szalek
+signature: v1.eyJzdWIiOiI2Mjc3IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyMTc4MDMsImV4cCI6MTc5MzMwNDIwM30.bCifUSRqWbvIFviQ41VPoN0PGy8bbr_XyYvmZ3N5qbM
 ---
 
 <script>
@@ -19,12 +19,13 @@ signature: Marcin Szalek
 
 [#4471](/kb/incidents/4471) says one bug: the parser reads dates month first. The reports
 merged into it describe more than that. We read them by what they say and where they came from,
-not by their subject line, and split the ticket. Each problem got its own ticket; all of them are closed now.
+not by their subject line, and split the ticket. Each problem got its own ticket.
 
 <ProblemTable ticket={4471} {tickets} />
 
 <Callout>
-#4471 was not one issue. The desk has finished its work on it, and each ticket above is closed.
+Engineering closed #4471 on 5 October. <code>parser</code> is fixed (<code>fix(dates): parse dd/mm for eu locales</code>).
+<code>hint</code> will not be fixed: the booking-v3 form is retired. <code>one-day</code> is not covered by either and stays open.
 </Callout>
 
 ## The problems
@@ -58,6 +59,6 @@ problems arrive as "wrong date", so all three landed in one ticket. Same subject
 
 - New wrong-date reports: check the tenant, the channel and the form before you merge. A
   booking-v3 form report goes to `hint`. A date one day off goes to `one-day`.
-- Close each ticket when its own fix ships.
+- Close each ticket when its own fix ships, or as not planned when engineering says it will not be fixed.
 
 <RenderStamp {signature} />
