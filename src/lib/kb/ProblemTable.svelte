@@ -9,7 +9,8 @@
   let { ticket, tickets }: { ticket: number; tickets: Partial<Record<Problem, string>> } = $props();
 
   const groups = $derived(problemsIn(reports as Report[], ticket, tenantOf, notes.oneDayMove));
-  const total = $derived(groups.reduce((n, g) => n + g.reports.length, 0));
+  const total = $derived(new Set(groups.flatMap((g) => g.reports.map((r) => r.id))).size);
+  const both = $derived(groups.find((g) => g.problem === 'one-day')?.reports.length ?? 0);
   const WHAT: Record<Problem, string> = {
     parser: 'day and month swapped: the shared parser reads every date month first',
     hint: 'day and month swapped: booking-v3 prints MM/DD/YYYY, the form reads the tenant’s way',
@@ -39,7 +40,11 @@
   </tbody>
 </table>
 
+{#if both}
+  <p class="note">{both} <code>one-day</code> reports are also counted under <code>parser</code>, where their tenant files them.</p>
+{/if}
+
 <style>
   .sum { font-size: 1.1rem; }
-  .what { color: var(--muted); font-size: 0.85em; }
+  .what, .note { color: var(--muted); font-size: 0.85em; }
 </style>
