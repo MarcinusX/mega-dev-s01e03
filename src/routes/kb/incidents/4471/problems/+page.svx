@@ -1,0 +1,64 @@
+---
+layout: runbook
+title: '#4471 · what the merged reports show'
+owner: support desk
+status: open
+reviewed: 2026-10-28
+signature: Marcin Szalek
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import DedupeExplorer from '#lib/kb/DedupeExplorer.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'https://github.com/MarcinusX/mega-dev-s01e03';
+  const tickets = { parser: `${repo}/issues/1`, hint: `${repo}/issues/2`, 'one-day': `${repo}/issues/3` };
+</script>
+
+[#4471](/kb/incidents/4471) says one bug: the parser reads dates month first. The reports
+merged into it describe more than that. We read them by what they say and where they came from,
+not by their subject line, and split the ticket. Each problem now has its own ticket.
+
+<ProblemTable ticket={4471} {tickets} />
+
+<Callout kind="warn">
+#4471 is not one issue, and the queued parser fix closes only part of it.
+Do not close the other tickets when the parser fix ships.
+</Callout>
+
+## The problems
+
+**`parser`: the day and month are swapped.** The shared parser reads every date month first.
+Every tenant on file writes the day first, so their dates come out flipped (7 April becomes
+4 July). It comes in through the app, by email and through booking-v2's form. This is the bug the
+queued fix is for.
+
+**`hint`: the same swap, made by the form.** booking-v3 prints `MM/DD/YYYY` under its date
+field. The tenant's people type what the hint tells them, month first, and the form reads it the
+tenant's way, day first. These reports look like the parser bug, but they come only through
+booking-v3's form. The parser fix leaves them broken. The fix is the hint, not the parser.
+Intake tagged reports by the reporter's browser, so its `hint` tag does not match this group:
+the tenant and the form decide it.
+
+**`one-day`: the date is one day off.** These reports show no swap. "Tuesday 12 May" arrives as
+Monday 11 May; one meeting is Tuesday in Lisbon and Monday in Toronto; an invite arrives before
+the booking. That is a time-zone shift, not a day/month order. The desk read these reports this
+way already (`desk-notes.json`), but #4471 kept them as a footnote under `parser`.
+
+## Why they were merged
+
+Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on the subject line alone. All three
+problems arrive as "wrong date", so all three landed in one ticket. Same subject is not same cause:
+
+<DedupeExplorer />
+
+## What the desk does now
+
+- Count reports per ticket above, not under #4471.
+- New wrong-date reports: check the tenant, the channel and the form before you merge. A
+  booking-v3 form report goes to `hint`. A date one day off goes to `one-day`.
+- Close each ticket only when its own fix ships.
+
+<RenderStamp {signature} />
